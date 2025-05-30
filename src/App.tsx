@@ -12,28 +12,31 @@ function App() {
   useEffect(() => {
     // Update page title
     document.title = 'Varalakshmi Kovela';
-    
+
     // Smooth scrolling for anchor links
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-      anchor.addEventListener('click', function (e) {
-        e.preventDefault();
-        
-        const targetId = this.getAttribute('href');
-        if (!targetId) return;
-        
-        const targetElement = document.querySelector(targetId);
-        if (!targetElement) return;
-        
-        window.scrollTo({
-          top: targetElement.offsetTop - 80, // Offset for header
-          behavior: 'smooth'
-        });
+    const handleAnchorClick = (e: Event) => {
+      e.preventDefault();
+      const targetId = (e.currentTarget as HTMLAnchorElement).getAttribute('href');
+      if (!targetId) return;
+
+      const targetElement = document.querySelector(targetId);
+      if (!targetElement) return;
+
+      window.scrollTo({
+        top: targetElement.getBoundingClientRect().top + window.scrollY - 80, // Offset for header
+        behavior: 'smooth',
       });
+    };
+
+    const anchors = document.querySelectorAll('a[href^="#"]');
+    anchors.forEach(anchor => {
+      anchor.addEventListener('click', handleAnchorClick);
     });
-    
+
+    // Cleanup on unmount
     return () => {
-      document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.removeEventListener('click', () => {});
+      anchors.forEach(anchor => {
+        anchor.removeEventListener('click', handleAnchorClick);
       });
     };
   }, []);
